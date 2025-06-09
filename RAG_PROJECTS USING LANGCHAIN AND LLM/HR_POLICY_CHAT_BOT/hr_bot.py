@@ -4,8 +4,7 @@ import os
 import shutil
 import requests
 from pathlib import Path
-
-
+from langchain.llms import Ollama
 
 db_faiss_path = 'HR_POLICY_DATABASE'
 os.makedirs(db_faiss_path, exist_ok=True)  # this wil generate the folder if does not exist

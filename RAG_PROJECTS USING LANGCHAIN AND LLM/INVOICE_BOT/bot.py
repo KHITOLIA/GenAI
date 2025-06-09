@@ -1,18 +1,18 @@
 import streamlit as st
-import ollama
+# import ollama
 import os
 import shutil
 import hashlib
-from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyMuPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
+from langchain.llms import Ollama
 
 # Setup
-model = 'mistral'
-client = ollama.Client()
+llm = Ollama(model = 'llama3.2')
 
-data_path = 'C:/Users/tbaka/OneDrive/Desktop/RAG_PROJECTS/INVOICE_BOT/Data/'
+data_path = 'Data/'
 os.makedirs(data_path, exist_ok=True)
 
 db_faiss_path = 'Faiss/'
@@ -27,7 +27,7 @@ def get_file_hash(file_path):
 def load_data(data_path):
     ext = data_path.split('.')[-1].lower()
     if ext == 'pdf':
-        loader = PyPDFLoader(data_path)
+        loader = PyMuPDFLoader(data_path)
     else:
         raise ValueError(f"Unsupported file format: {ext}")
     return loader.load_and_split()
@@ -55,8 +55,9 @@ def load_vector_store(vector_dir):
     return db
 
 # --- Streamlit UI ---
-st.title('Invoice Bot')
-st.markdown("RAG tool to retrieve relevant information based on your query")
+st.set_page_config(page_title="Jarvis Chatbot", page_icon=":robot_face:", layout="wide")
+st.title("Jarvis Chatbot :robot_face:")
+st.write('Welcome to the Jarvis Chatbot! Ask me anything : ')
 st.header('Upload Invoice Receipt')
 
 uploaded_file = st.file_uploader("Choose a PDF file", type=["pdf", "txt", "docx", "csv"])
@@ -112,7 +113,7 @@ if st.button('🔍 Retrieve Context'):
             Please provide the answer in a Bulletin Point by focusing on the main topics to cover! 
             after proving the information you can ask me for the next query ?."""
             prompt = prompt_template.format(query=user_query, similar_query=doc)
-            output = client.generate(model=model, prompt=prompt).response
+            output = llm.invoke(prompt)
 
             if output:
                 st.success("✅ Documents retrieved successfully!")
@@ -134,3 +135,5 @@ if st.button("🛑 Stop it's processing"):
     except Exception as e:
         st.warning(f"⚠️ Could not delete folders: {e}")
     os._exit(0)
+
+

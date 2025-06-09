@@ -1,8 +1,7 @@
 from rag import retrieving_documents
-import ollama
+from langchain.llms import Ollama
 
-client = ollama.Client()
-model = 'llama3.2'
+llm = Ollama(model = 'llama3.2')
 
 def policy_bot(user_query, file_path):
     retireved_document = retrieving_documents(user_query, file_path)
@@ -11,7 +10,7 @@ def policy_bot(user_query, file_path):
             Please provide the answer in a Bulletin Point by focusing on the main topics to cover! 
             after proving the information you can ask me for the next query ?."""
     prompt = prompt_template.format(query = user_query, similar_query = retireved_document)
-    output = client.generate(model = model, prompt = prompt).response
+    output = llm.invoke(prompt)
     
     if output:
         print("Documents retrieved successfully!")

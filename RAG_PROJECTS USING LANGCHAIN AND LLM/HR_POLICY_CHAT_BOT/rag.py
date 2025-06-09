@@ -12,7 +12,7 @@ def load_and_split_documents(file_path):
     documents = loader.load()
     # split the documents into smaller chunks
 
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=500)
     split_documents = text_splitter.split_documents(documents)
     return split_documents
 
